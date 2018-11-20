@@ -1,5 +1,6 @@
-import sanitization
 from sys import argv
+import sanitization
+import vigenere
 
 
 if __name__ == "__main__":
@@ -21,3 +22,13 @@ if __name__ == "__main__":
         print("Alert: \tYour message and/or key have been modified\n"
               + "\tAll lowercase values have been converted to UPPERCASE\n"
               + "\tand all non alphabetic characters have been removed including spaces and newlines")
+
+    cipher_text = vigenere.cipher(
+        secret_message_sanitized, secret_key_sanitized)
+
+    del secret_key, secret_message, secret_key_sanitized, secret_message_sanitized
+
+    print(cipher_text)
+
+    print(secret_key, secret_key_sanitized,
+          secret_message, secret_message_sanitized)
