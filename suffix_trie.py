@@ -7,35 +7,50 @@ class trie_node:
 
     # upon initialization the set the character
     # and make a child $ to terminate the string
+    # and set the depth to 0
     def __init__(self, character):
         self.character = character
         self.children = ["$"]
         self.depth = 0
 
+    # add another node or another string to the tree
     def add_child(self, child):
-        node = trie_node(child) if isinstance(child, str) else child
+        # create a new node if child is a string
+        child = trie_node(child) if isinstance(child, str) else deepcopy(child)
 
-        for child in node.get_each():
-            child.depth += self.depth + 1
+        # update the depth the root of the child tree
+        # and then all children of the new child if they exist
+        for node in child.get_each():
+            node.depth += self.depth + 1
 
+        # update the chilren list
         if self.children == ["$"]:
-            self.children = [node]
+            self.children = [child]
         else:
-            self.children.append(node)
+            self.children.append(child)
 
+    # return the list of children
     def get_children(self):
         return self.children
 
+    # return the character at the node
     def get_character(self):
         return self.character
 
+    # generator to return every node
+    # from the parent down to its leaves
     def get_each(self):
+
+        # yield the parent
         yield self
 
+        # yield each of the children
         for child in self.children:
             if not (child == "$"):
                 yield from child.get_each()
 
+    # string representation of the node down to its leaves
+    # complete with tabbing to represent depth
     def __str__(self):
         string = ""
         for child in self.get_each():
@@ -74,12 +89,12 @@ temp2_suffix_trie.add_child('k')
 
 for i in suffix_trie.get_each():
     if i.get_character() == 'e':
-        i.add_child(deepcopy(temp_suffix_trie))
+        i.add_child(temp_suffix_trie)
 
 add_list = []
 for i in suffix_trie.get_each():
     if i.get_character() == 'k':
         add_list.append(i)
 for i in add_list:
-    i.add_child(deepcopy(temp2_suffix_trie))
+    i.add_child(temp2_suffix_trie)
 print(suffix_trie)
