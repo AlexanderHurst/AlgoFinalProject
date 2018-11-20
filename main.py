@@ -21,10 +21,11 @@ if __name__ == "__main__":
     if not (secret_message == secret_message_sanitized) or not (secret_key == secret_key_sanitized):
         print("Alert: \tYour message and/or key have been modified\n"
               + "\tAll lowercase values have been converted to UPPERCASE\n"
-              + "\tand all non alphabetic characters have been removed including spaces and newlines")
+              + "\tand all non alphabetic characters have been removed including spaces and newlines\n")
 
     cipher_text = vigenere.encrypt(
         secret_message_sanitized, secret_key_sanitized)
 
-    print(cipher_text)
-    print(vigenere.decrypt(cipher_text, secret_key_sanitized))
+    print("cipher text:", cipher_text)
+    print("message after decryption:", vigenere.decrypt(
+        cipher_text, secret_key_sanitized))
