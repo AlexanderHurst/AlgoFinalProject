@@ -28,3 +28,15 @@ def decrypt(cipher_text, secret_key):
 
         secret_message += chr(secret_letter)
     return secret_message
+
+
+if __name__ == "__main__":
+    secret_message = "WEAREDISCOVEREDSAVEYOURSELF"
+    secret_key = "DECEPTIVE"
+    cipher_text = encrypt(secret_message, secret_key)
+    print("encrypt(" + secret_message + ", " + secret_key + "):\n\t" + cipher_text)
+
+    print()
+
+    secret_message = decrypt(cipher_text, secret_key)
+    print("decrypt(" + cipher_text + ", " + secret_key + "):\n\t" + secret_message)
