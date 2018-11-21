@@ -23,12 +23,8 @@ if __name__ == "__main__":
               + "\tAll lowercase values have been converted to UPPERCASE\n"
               + "\tand all non alphabetic characters have been removed including spaces and newlines")
 
-    cipher_text = vigenere.cipher(
+    cipher_text = vigenere.encrypt(
         secret_message_sanitized, secret_key_sanitized)
 
-    del secret_key, secret_message, secret_key_sanitized, secret_message_sanitized
-
     print(cipher_text)
-
-    print(secret_key, secret_key_sanitized,
-          secret_message, secret_message_sanitized)
+    print(vigenere.decrypt(cipher_text, secret_key_sanitized))
