@@ -1,12 +1,33 @@
 from vigenere import *
+import threading
 
 
-def brute_force(cipher_text, key_length, secret_message):
+class brute_force(threading.Thread):
+
+    def __init__(self, cipher_text, key_length, secret_message):
+        super(brute_force, self).__init__()
+        self.cipher_text = cipher_text
+        self.key_length = key_length
+        self.secret_message = secret_message
+
+    def run(self):
+        print("Starting Brute search on key length " + str(self.key_length))
+        key = brute_force_key(
+            self.cipher_text, self.key_length, self.secret_message)
+        if key:
+            print("key found for key length " + str(self.key_length))
+            print("key:", key)
+        else:
+            print("key not found for key length " + str(self.key_length))
+
+
+def brute_force_key(cipher_text, key_length, secret_message):
     brute_force_key = ['A' for i in range(key_length)]
     for i in range((ord('Z') - ord('A') + 1) ** key_length):
         if decrypt(cipher_text, ''.join(brute_force_key)) == secret_message:
             return ''.join(brute_force_key)
-        _increment_brute_force_key(brute_force_key, key_length, key_length-1)
+        _increment_brute_force_key(
+            brute_force_key, key_length, key_length-1)
 
 
 def _increment_brute_force_key(key, key_length, position):

@@ -66,7 +66,7 @@ def find_longest_substring_location(string):
 
                 # empty the substring to begin searching again
                 substring = []
-
+        substring = []
         # shift the string
         compare_queue.popleft()
 

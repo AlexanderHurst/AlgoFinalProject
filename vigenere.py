@@ -1,3 +1,5 @@
+from sys import argv
+
 # takes a secret message and key and returns
 # vigenere ciphertext
 
@@ -31,7 +33,7 @@ def decrypt(cipher_text, secret_key):
 
 
 if __name__ == "__main__":
-    secret_message = "WEAREDISCOVEREDSAVEYOURSELF"
+    secret_message = argv[1]
     secret_key = "DECEPTIVE"
     cipher_text = encrypt(secret_message, secret_key)
     print("encrypt(" + secret_message + ", " + secret_key + "):\n\t" + cipher_text)

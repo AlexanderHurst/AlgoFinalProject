@@ -1,8 +1,10 @@
 import re
-
+from sys import argv
 
 # removes all characters that are not part of legal characters regex
 # replaces them with replacement "" for nothing
+
+
 def sanitize(string, legal_characters, replacement):
 
     # create the regex
@@ -13,6 +15,6 @@ def sanitize(string, legal_characters, replacement):
 
 
 if __name__ == "__main__":
-    string = "SNSntaou7%53&[{(=nao aosneu +{} { \n asonte7 5tn.ut"
-    print(string)
+    string = argv[1]
+    # print(string)
     print(sanitize(string, '[^a-zA-Z]', ""))
