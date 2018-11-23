@@ -2,8 +2,8 @@ import threading
 import queue
 import collections
 from sys import argv
-import numpy
 import statistics
+from time import time
 
 
 def ci_keylength(text, start, end):
@@ -24,7 +24,7 @@ def ci_keylength(text, start, end):
     num = end - start + 1
 
     values = [keylength[1] for keylength in ci_list]
-    mean = numpy.mean(values)
+    mean = statistics.mean(values)
     standard_dev = statistics.stdev(values, mean)
 
     high_ci_list = []
@@ -65,7 +65,9 @@ if __name__ == "__main__":
     string = argv[1]
     start = 1
     end = 25
-
+    start_time = time()
     keylengths = ci_keylength(string, start, end)
+    end_time = time() - start_time
+    print("time taken: " + str(end_time))
 
     print(keylengths)

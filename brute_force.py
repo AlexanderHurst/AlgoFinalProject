@@ -1,4 +1,4 @@
-from vigenere import *
+from vigenere import encrypt, decrypt
 import threading
 
 
