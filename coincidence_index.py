@@ -21,8 +21,6 @@ def ci_keylength(text, start, end):
     while not ci_queue.empty():
         ci_list.append(ci_queue.get())
 
-    num = end - start + 1
-
     values = [keylength[1] for keylength in ci_list]
     mean = statistics.mean(values)
     standard_dev = statistics.stdev(values, mean)
