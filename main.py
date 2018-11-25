@@ -1,11 +1,11 @@
 from sys import argv
 import sanitization
 import vigenere
-from factor import factors
 from brute_force import brute_force
-from substring import find_longest_substring_location
 from pso import pso
 import threading
+import string_tools
+from coincidence_index import ci_keylength
 
 if __name__ == "__main__":
     legal_characters = '[^a-zA-Z]'
@@ -14,7 +14,9 @@ if __name__ == "__main__":
         print("Usage main.py \"string\" \"key\"")
         exit(2)
 
-    secret_message = argv[1]
+    input_file = argv[1]
+    input_file = open(input_file, "r")
+    secret_message = input_file.read()
     secret_message_sanitized = sanitization.sanitize(
         secret_message, legal_characters, "")
 
@@ -27,34 +29,30 @@ if __name__ == "__main__":
               + "\tAll lowercase values have been converted to UPPERCASE\n"
               + "\tand all non alphabetic characters have been removed including spaces and newlines\n")
 
+    secret_message_sanitized = string_tools.string_to_num_list(
+        secret_message_sanitized, 'A')
+    secret_key_sanitized = string_tools.string_to_num_list(
+        secret_key_sanitized, 'A')
+
     cipher_text = vigenere.encrypt(
         secret_message_sanitized, secret_key_sanitized)
 
-    print("cipher text:", cipher_text)
-    print("expected message after decryption:", vigenere.decrypt(
-        cipher_text, secret_key_sanitized))
+    keylengths = ci_keylength(cipher_text, 1, 9)
 
-    repeatloc = find_longest_substring_location(cipher_text)
-    distance = repeatloc[1] - repeatloc[0]
-
-    factors = factors(distance)
-    factors.add(distance)
-    factors = sorted(factors)
-
-    print("\nStarting PSO and Brute force threads on key length(s):", factors)
-    print("and cipher text\n" + cipher_text + "\n")
+    print("\nStarting PSO and Brute force threads on key length(s): " + str(keylengths))
+    # print("and cipher text\n" + str(cipher_text) + "\n")
 
     pso_thread = []
     brute_thread = []
 
-    for i, factor in enumerate(factors):
-
-        pso_thread.append(pso(cipher_text, factor))
+    for i, keylength in enumerate(keylengths):
+        pso_thread.append(pso(cipher_text, len(secret_key_sanitized),
+                              200, 200, 26, 1, 10, 1, 2.05, 2.05).start())
         brute_thread.append(brute_force(
-            cipher_text, factor, secret_message_sanitized))
+            cipher_text, keylength, secret_message_sanitized))
 
         print("\nStarting PSO and Brute force threads on key length " +
-              str(factor) + "\n")
+              str(keylength) + "\n")
 
         brute_thread[i].start()
         pso_thread[i].start()

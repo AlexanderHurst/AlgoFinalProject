@@ -1,5 +1,9 @@
 from math import ceil, sqrt
 
+# returns factors
+# unused in this application because
+# substrings were rendered obsolete by Coincedence Index
+
 
 def factors(number):
     result = set()

@@ -1,6 +1,9 @@
 from copy import deepcopy
 # creates nodes and provides a
 # convenient interface for the suffix trie
+# this was intended to replace substring however has
+# been abandoned as substring was replaced by
+# coincidence index instead
 
 
 class trie_node:

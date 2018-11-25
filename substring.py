@@ -3,8 +3,8 @@ from collections import deque
 # returns the longest substring in n*n time
 # algorithm idea credit to Arvind Padmanabhan
 # from stack overflow modified to include substring locations
-# note: this will later be changed to a suffix tree
-# in order to achieve linear time
+# this was rendered obsolete for determining key length by
+# coincidence index and is no longer used in this project
 
 
 def find_longest_substring_location(string):
@@ -81,8 +81,10 @@ if __name__ == "__main__":
 
     substring_loc = find_longest_substring_location(string)
 
-    first_substring = string[substring_loc[0]: substring_loc[0] + substring_loc[2]]
-    second_substring = string[substring_loc[1]: substring_loc[1] + substring_loc[2]]
+    first_substring = string[substring_loc[0]
+        : substring_loc[0] + substring_loc[2]]
+    second_substring = string[substring_loc[1]
+        : substring_loc[1] + substring_loc[2]]
 
     print("String:\t\t\t", string)
     print("Substring length:\t", substring_loc[2])
