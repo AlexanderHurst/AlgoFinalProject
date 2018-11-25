@@ -11,7 +11,7 @@ if __name__ == "__main__":
     legal_characters = '[^a-zA-Z]'
 
     if not (len(argv) == 3):
-        print("Usage main.py \"string\" \"key\"")
+        print("Usage main.py \"input file\" \"key\"")
         exit(2)
 
     input_file = argv[1]

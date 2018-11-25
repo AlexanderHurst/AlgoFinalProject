@@ -23,6 +23,7 @@ def num_list_to_string(num_list, first_char):
     return string
 
 
+# quick validation method
 if __name__ == "__main__":
     test_string = argv[1]
     num_list = string_to_num_list(test_string, 'A')

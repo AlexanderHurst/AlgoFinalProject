@@ -14,6 +14,7 @@ def sanitize(string, legal_characters, replacement):
     return string
 
 
+# quick validation method
 if __name__ == "__main__":
     string = argv[1]
     # print(string)
