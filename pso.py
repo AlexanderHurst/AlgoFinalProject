@@ -8,6 +8,8 @@ from sys import argv
 import sanitization
 import string_tools
 import copy
+import queue
+import statistics
 
 # thread for running pso
 
@@ -15,7 +17,7 @@ import copy
 class pso(threading.Thread):
 
     # ititialize the pso thread
-    def __init__(self, cipher_text, keylength, num_particles, iterations, char_range, vmin, vmax, weight, self_conf, swarm_conf):
+    def __init__(self, cipher_text, keylength, num_particles, iterations, char_range, vmin, vmax, weight, self_conf, swarm_conf, answer_queue):
         super(pso, self).__init__()
         self.cipher_text, self.keylength = cipher_text, keylength
         self.char_range = char_range
@@ -26,6 +28,7 @@ class pso(threading.Thread):
         self.self_conf, self.swarm_conf = self_conf, swarm_conf
         self.gb_fitness = inf
         self.gb_letters = None
+        self.answer_queue = answer_queue
 
     # start the pso thread
     def run(self):
@@ -54,14 +57,15 @@ class pso(threading.Thread):
 
             # print some information for the user
             print(i, "Iterations of PSO completed on keylength ", self.keylength)
-            print("Current Best Letters", string_tools.num_list_to_string(
-                self.gb_letters, 'A'))
-            print("Current Best Fitness", self.gb_fitness)
-        # when pso is done tell the user the findings
-        print("PSO completed", self.iterations, "iterations")
-        print("Best key found", string_tools.num_list_to_string(
-            self.gb_letters, 'A'))
-        print("Fitness", self.gb_fitness)
+            print("Current Best Letters",
+                  string_tools.num_list_to_string(self.gb_letters, 'A'))
+        #     print("Current Best Fitness", self.gb_fitness)
+        # # when pso is done tell the user the findings
+        # print("PSO completed", self.iterations, "iterations")
+        # print("Best key found", string_tools.num_list_to_string(
+        #     self.gb_letters, 'A'))
+        # print("Fitness", self.gb_fitness)
+        self.answer_queue.put([self.gb_letters, self.gb_fitness])
 
 
 class _pso_particle():
@@ -201,36 +205,75 @@ if __name__ == "__main__":
 
     cipher_text = encrypt(secret_message_sanitized, secret_key_sanitized)
 
-    letter_counter = {}
-    bigram_counter = {}
+    # determine fitness of correct solution
+    # letter_counter = {}
+    # bigram_counter = {}
 
-    letter_counter[secret_message_sanitized[0]] = 1
+    # letter_counter[secret_message_sanitized[0]] = 1
 
-    for i in range(1, len(secret_message_sanitized)):
-        letter_count = letter_counter.get(secret_message_sanitized[i])
-        if letter_count == None:
-            letter_counter[secret_message_sanitized[i]] = 1
-        else:
-            letter_counter[secret_message_sanitized[i]] = letter_count + 1
+    # for i in range(1, len(secret_message_sanitized)):
+    #     letter_count = letter_counter.get(secret_message_sanitized[i])
+    #     if letter_count == None:
+    #         letter_counter[secret_message_sanitized[i]] = 1
+    #     else:
+    #         letter_counter[secret_message_sanitized[i]] = letter_count + 1
 
-        bigram_count = bigram_counter.get(
-            (secret_message_sanitized[i-1], secret_message_sanitized[i]))
+    #     bigram_count = bigram_counter.get(
+    #         (secret_message_sanitized[i-1], secret_message_sanitized[i]))
 
-        if bigram_count == None:
-            bigram_counter[(secret_message_sanitized[i-1],
-                            secret_message_sanitized[i])] = 1
-        else:
-            bigram_counter[(secret_message_sanitized[i-1],
-                            secret_message_sanitized[i])] = bigram_count + 1
-    fitness = 0
-    for bigram, number in bigram_counter.items():
-        fitness += 0.73 * \
-            (abs(bigram_frequencies_as_num(bigram) -
-                 (number/(len(secret_message_sanitized) - 1))))
-    for letter, number in letter_counter.items():
-        fitness += 0.27 * \
-            (abs(letter_frequencies_as_num(letter) -
-                 (number/len(secret_message_sanitized))))
-    print(fitness)
-    pso(cipher_text, len(secret_key_sanitized),
-        200, 200, 26, 1, 10, 1, 2.05, 2.05).start()
+    #     if bigram_count == None:
+    #         bigram_counter[(secret_message_sanitized[i-1],
+    #                         secret_message_sanitized[i])] = 1
+    #     else:
+    #         bigram_counter[(secret_message_sanitized[i-1],
+    #                         secret_message_sanitized[i])] = bigram_count + 1
+    # fitness = 0
+    # for bigram, number in bigram_counter.items():
+    #     fitness += 0.73 * \
+    #         (abs(bigram_frequencies_as_num(bigram) -
+    #              (number/(len(secret_message_sanitized) - 1))))
+    # for letter, number in letter_counter.items():
+    #     fitness += 0.27 * \
+    #         (abs(letter_frequencies_as_num(letter) -
+    #              (number/len(secret_message_sanitized))))
+    # print(fitness)
+
+    answer_queue = queue.Queue(maxsize=0)
+    pso_threads = []
+    iterations = 50
+    for i in range(iterations):
+        pso_threads.append(pso(cipher_text, len(secret_key_sanitized),
+                               200, 100, 26, 1, 10, 1, 2.05, 2.05, answer_queue))
+        pso_threads[i].start()
+
+    for pso_thread in pso_threads:
+        pso_thread.join()
+
+    answer_list = []
+
+    while not answer_queue.empty():
+        answer_list.append(answer_queue.get())
+
+    best_letters_matched = 0
+    worst_letters_matched = inf
+    letters_matched = []
+
+    for letters, fitness in (answer_list):
+        correct_letters = 0
+        for key_letter, recovered_letter in zip(secret_key_sanitized, letters):
+            print(key_letter, recovered_letter)
+            if key_letter == recovered_letter:
+                correct_letters += 1
+        if best_letters_matched < correct_letters:
+            best_letters_matched = correct_letters
+
+        if worst_letters_matched > correct_letters:
+            worst_letters_matched = correct_letters
+        letters_matched.append(correct_letters)
+
+    average_letters_matched = statistics.mean(letters_matched)
+    st_dev = statistics.stdev(letters_matched, average_letters_matched)
+    print("best: ", best_letters_matched)
+    print("worst: ", worst_letters_matched)
+    print("average: ", average_letters_matched)
+    print("standard deviation: ", st_dev)

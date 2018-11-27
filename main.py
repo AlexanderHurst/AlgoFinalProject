@@ -6,6 +6,7 @@ from pso import pso
 import threading
 import string_tools
 from coincidence_index import ci_keylength
+import queue
 
 if __name__ == "__main__":
     legal_characters = '[^a-zA-Z]'
@@ -39,7 +40,7 @@ if __name__ == "__main__":
 
     keylengths = ci_keylength(cipher_text, 1, 9)
 
-    print("\nStarting PSO and Brute force threads on key length(s): " + str(keylengths))
+    # print("\nStarting PSO and Brute force threads on key length(s): " + str(keylengths))
     # print("and cipher text\n" + str(cipher_text) + "\n")
 
     pso_thread = []
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
     for i, keylength in enumerate(keylengths):
         pso_thread.append(pso(cipher_text, len(secret_key_sanitized),
-                              200, 200, 26, 1, 10, 1, 2.05, 2.05).start())
+                              200, 200, 26, 1, 10, 1, 2.05, 2.05, queue.Queue()))
         brute_thread.append(brute_force(
             cipher_text, keylength, secret_message_sanitized))
 
