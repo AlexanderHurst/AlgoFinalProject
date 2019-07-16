@@ -1,1 +1,3 @@
-https://docs.google.com/presentation/d/1HZOHoLj97n5n7fjGJo7QKX4JJ9a8G8d5JUgOYeXfLXA/edit?usp=sharing
+# Cracking the Vignere Cipher
+
+This project was created for an algorithms final assignment. The purpose of the assignment being to analyze different methods of cracking cyphers with a focus on the benefits of using an approach such as Particle Swarm Optimization rather than pure brute force.
